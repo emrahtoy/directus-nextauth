@@ -1,5 +1,5 @@
+import { components, ApiCollections } from "@/api-collection";
 import directus from "@/lib/directus";
-import { User } from "@/models/User";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -28,8 +28,18 @@ const handler = NextAuth({
         });
 
         if (res) {
-          const directusUser = await directus.users.me.read();
-          return directusUser as User;
+          const directusUser = await directus.users.me.read(
+            {fields:[
+              "*",
+              "role.*",
+              "avatar.*",
+              "active_tenant.*",
+              "active_tenant.logo.*",
+              "active_company.*",
+              "active_company.logo.*"
+            ]}
+          );
+          return directusUser as ApiCollections["directus_users"]; 
         }
         // Return null if user data could not be retrieved
         return null;
@@ -44,7 +54,7 @@ const handler = NextAuth({
         return session
     },
     jwt({token,user,account}){
-        token.user = user as User;
+        token.user = user as components["schemas"]["Users"];
         return token;
     },
     async signIn({ user, account, profile, email, credentials }) {
