@@ -39,7 +39,7 @@ const handler = NextAuth({
               "active_company.logo.*"
             ]}
           );
-          return directusUser as ApiCollections["directus_users"]; 
+          return directusUser; 
         }
         // Return null if user data could not be retrieved
         return null;
@@ -54,7 +54,7 @@ const handler = NextAuth({
         return session
     },
     jwt({token,user,account}){
-        token.user = user as components["schemas"]["Users"];
+        token = user;
         return token;
     },
     async signIn({ user, account, profile, email, credentials }) {
